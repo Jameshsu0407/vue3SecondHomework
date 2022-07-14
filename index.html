@@ -1,32 +1,51 @@
-<!DOCTYPE html><html><head><title>章節挑戰 - 挑戰版</title><meta name="viewport" content="width=device-width, initial-scale=1"><link href="images/favicon.ico" rel="shortcut icon"><meta charset="UTF-8"><script src="./javascripts/vendor.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.0.2/vue.global.js"></script></head><body class="bg-lighter">
+<!DOCTYPE html><html><head><title>Vue3 第二次作業 - 飲料點單系統</title><meta name="viewport" content="width=device-width, initial-scale=1"><link href="images/favicon.ico" rel="shortcut icon"><meta charset="UTF-8"><script src="./javascripts/vendor.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.0.2/vue.global.js"></script></head><body class="bg-lighter">
 <div class="container main my-3"><div class="row"><main class="col post">
-<!-- 章節標題 --><div class="mb-4"><h1 class="mt-0 text-muted">章節挑戰 - 挑戰版</h1></div>
+<!-- 章節標題 --><div class="mb-4"><h1 class="mt-0 text-muted">Vue3 第二次作業 - 飲料點單系統</h1></div>
 <!-- 🔥🔥練習開始🔥🔥 -->
 
 <div id="app">
   <div class="container gx-2">
-    <div class="row gx-3 bg-light py-3">
-      <div class="col-md-3">
-        <div class="list-group" v-for="item in products">
-          <a href="#" class="list-group-item list-group-item-action" @click="selectDrinks(item)">
-            <h6 class="card-title mb-1"> {{ item.name }} </h6>
-            <div class="d-flex align-items-center justify-content-between">
-              <p class="mb-0"><small> {{ item.engName }} </small></p>
-              <p class="mb-0"><small>NT$  {{ item.price }} </small></p>
-            </div>
-          </a>
+    <div class="row gx-3 bg-light py-2">
+      <div class="col-lg-3 mb-md-2" style="height: 591px; overflow-y: scroll;">
+        <div class="d-flex flex-column" style="gap: 0.5rem;">
+          <div class="list-group" v-for="item in products">
+            <a href="#" class="list-group-item list-group-item-action" @click="selectDrinks(item)" style="padding: 8px;">
+              <div class="d-flex" style="gap: 8px;">
+                <div>
+                  <img :src="item.imageUrl" style="width: 85px; height: 85px; object-fit: cover; ">
+                </div>
+                <div class="d-flex flex-column" style="width: 100%; height: 100%;">
+                  <h6 class="card-title mb-0"> {{ item.name }} </h6>
+                  <p class="mb-0"><small> {{ item.engName }} </small></p>
+                  <p class="mb-0 mt-1 text-end"><small>NT$  {{ item.price }} </small></p>
+                </div>
+              </div>
+              
+            </a>
+          </div>
         </div>
+        
       </div>
-      <div class="col-md-9">
+      <div class="col-lg-9">
         <div class="card mb-2">
           <div class="position-absolute text-white d-flex align-items-center justify-content-center" style="top: 0;bottom: 0;left: 0;right: 0;background-color: rgba(0, 0, 0, 0.65); z-index: 100;" v-if="darkZone">請先選擇飲品</div>
           <div class="card-body px-4">
             <div class="mb-3">
-              <h4> {{ temp.name }} </h4>
+              <div class="d-flex" style="gap: 20px;">
+                <div>
+                  <img :src="temp.imageUrl" alt="" style="width: 85px; height: 85px; object-fit: cover; ">
+                  
+                </div>
+                <div>
+                  <h4> {{ temp.name }} </h4>
+                  <small> {{ temp.engName }} </small>
+                </div>
+              </div>
+              
             </div>
             <div class="mb-3">
               <label for="productNum" class="form-label">數量</label>
-              <input type="number" class="form-control" id="productNum" placeholder="數量" min="0" :value="temp.number" v-model.number="temp.number">
+              <input type="number" class="form-control" id="productNum" placeholder="數量" min="1" step="1" onkeyup="value=value.replace(/[^\d]/g,'').replace(/^0{1,}/g,'')" :value="temp.number" v-model.number="temp.number">
             </div>
             <div class="mb-3">
               <label for="productNum" class="form-label d-block">冰塊*</label>
@@ -54,11 +73,14 @@
               <textarea class="form-control" id="productNotice" rows="2" v-model="temp.note"></textarea>
             </div>
             <div class="d-flex gap-2">
-              <button class="btn btn-outline-primary w-100" type="button" @click="cancelBtn">取消</button>
-              <button class="btn btn-primary w-100" type="button" @click="submitBtn(temp)">加入</button>
+              <button class="btn btn-outline-primary w-100 shadow-none" type="button" @click="cancelBtn">取消</button>
+              <button class="btn btn-primary w-100 shadow-none" type="button" @click="submitBtn(temp)">確認</button>
             </div>
           </div>
         </div>
+        
+      </div>
+      <div class="col-lg-12">
         <div class="card" v-if="hasOrder">
           <div class="card-body">
             <table class="table">
@@ -86,22 +108,22 @@
                     <td> {{ item.toppings.join('、') }} </td>
                     <td> {{ item.salesPrice }} </td>
                     <td> {{ item.number }} </td>
-                    <td class="text-end"> {{ item.sum }} </td>
+                    <td> {{ item.sum }} </td>
                     <td><button type="button" class="btn btn-primary btn-sm" @click="modifyBtn(item)">修改</button></td>
                     <td><button type="button" class="btn btn-danger btn-sm" @click="deleteBtn(item)">刪除</button></td>
                   </tr>
                 </template>
               </tbody>
             </table>
-            <p class="text-end">共 NT$ {{ orderTotal }} 元</p>
-            <button class="btn btn-sm btn-secondary w-100">產生訂單</button>
+            <p class="text-end">共 {{ orderList.length }} 筆， NT$ {{ orderTotal }} 元</p>
+            <button type="button" class="btn btn-sm btn-secondary w-100 shadow-none" @click="generateOrder(orderList)">產生訂單</button>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <!-- <div class="bg-light p-3 mt-3">
-    <div class="bg-white p-3 d-flex flex-column" style="min-height: 450px;">
+  <div class="bg-light p-3 mt-3" v-for="(history, i) in historyOrder" :key=" 'history' + i">
+    <div class="bg-white p-3 d-flex flex-column" style="min-height: 300px;" v-if="orderDetail.length > 0">
       <table class="table">
         <thead>
           <tr>
@@ -115,25 +137,28 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <th scope="row">珍珠鮮奶茶<br>
-              <small class="text-muted fw-normal">備註：阿姨，我不想努力了</small>
-            </th>
-            <td>正常冰</td>
-            <td>全糖</td>
-            <td>椰果</td>
-            <td>70</td>
-            <td>1</td>
-            <td class="text-end">70</td>
-          </tr>
+          <!-- {{historyOrder[2]}} -->
+          <template v-for="(item, key) in history.list" :key=" 'item' + key">
+            <tr>
+              <th scope="row"> {{ item.name }} <br>
+                <small class="text-muted fw-normal">備註：{{ item.note }} </small>
+              </th>
+              <td> {{ item.ice }} </td>
+              <td> {{ item.sugar }} </td>
+              <td> {{ item.toppings.join('、') }} </td>
+              <td> {{ item.salesPrice }} </td>
+              <td> {{ item.number }} </td>
+              <td> {{ item.sum }} </td>
+            </tr>
+          </template>
         </tbody>
       </table>
-      <p class="mt-3 mb-1">訂單成立時間：2021-01-12 03:37:01</p>
-      <p class="mb-1">餐點數： 1</p>
+      <p class="mt-3 mb-1">訂單成立時間： {{ history.date }} </p>
+      <p class="mb-1">餐點數： {{ history.setNumber }} </p>
       <p class="mb-1">付款狀態：未付款</p>
-      <p class="text-end mt-auto">共 NT$ 70 元</p>
+      <p class="text-end mt-auto">共 NT$ {{ history.total }} 元</p>
     </div>
-  </div> -->
+  </div>
 </div>
 
 <script>
@@ -148,6 +173,7 @@ const App = {
           name: '珍珠鮮奶茶',
           engName: 'Pearl Milk Tea',
           price: 60,
+          imageUrl: 'https://i2.wp.com/www.hiilan.com.tw/wp-content/uploads/2020/02/DSC_8373-scaled.jpg?ssl=1',
           defaults: {
             toppings: ['珍珠'],
             sugar: '',
@@ -158,6 +184,7 @@ const App = {
           name: '椰果鮮奶茶',
           engName: 'Coconut Milk Tea',
           price: 60,
+          imageUrl: 'https://img.alicdn.com/i3/3055821050/O1CN01ZrgtX51JcwUI0ugvJ_!!3055821050-0-lubanu-s.jpg',
           defaults: {
             toppings: ['椰果'],
             sugar: '',
@@ -168,6 +195,7 @@ const App = {
           name: '鮮奶茶',
           engName: 'Milk Tea',
           price: 50,
+          imageUrl: 'https://assets.tmecosys.com/image/upload/t_web767x639/img/recipe/ras/Assets/14648198-fecf-41fc-b2d6-0f888bd69a68/Derivates/9ba109e7-c327-4828-b2d4-4eb973987cb8.jpg',
           defaults: {
             toppings: [''],
             sugar: '',
@@ -178,6 +206,7 @@ const App = {
           name: '古意冬瓜茶 (糖固定)',
           engName: 'Winter Melon Drink',
           price: 30,
+          imageUrl: 'https://assets.tmecosys.com/image/upload/t_web767x639/img/recipe/ras/Assets/d807443b-56c0-474c-9a62-9dde2d5ca382/Derivates/3f7aad6a-7e0f-4082-ae76-bf2ef1110be3.jpg',
           defaults: {
             toppings: [''],
             sugar: '全糖',
@@ -188,6 +217,7 @@ const App = {
           name: '蜜香紅茶',
           engName: 'Black Tea',
           price: 30,
+          imageUrl: 'https://cf.shopee.tw/file/66ee0a430f5e9a8e7c5f5e8a394d6c50',
           defaults: {
             toppings: [''],
             sugar: '',
@@ -198,6 +228,7 @@ const App = {
           name: '包種青茶',
           engName: 'Black Tea',
           price: 35,
+          imageUrl: 'https://cf.shopee.tw/file/4fbb81da8041987fea2884a5053493b8',
           defaults: {
             toppings: [''],
             sugar: '',
@@ -208,6 +239,7 @@ const App = {
           name: '檸檬烏龍',
           engName: 'Lemon Oolong Tea',
           price: 55,
+          imageUrl: 'https://d1ralsognjng37.cloudfront.net/6b07ef53-6110-4433-b155-84e95eaa39e1.jpeg',
           defaults: {
             toppings: [''],
             sugar: '',
@@ -218,6 +250,7 @@ const App = {
           name: '薑母茶 (熱飲)',
           engName: 'Ginger Tea',
           price: 55,
+          imageUrl: 'https://i.beauty321.com/816x/https://il.beauty321.com/gallery/gallery/45043/photo-61a0619861312.jpg',
           defaults: {
             toppings: [''],
             sugar: '',
@@ -228,6 +261,7 @@ const App = {
           name: '青草茶',
           engName: 'Herbal Tea',
           price: 35,
+          imageUrl: 'https://cf.shopee.tw/file/dc3273d369b2591362d31e062e277e58',
           defaults: {
             toppings: [''],
             sugar: '',
@@ -238,6 +272,7 @@ const App = {
           name: '金桔檸檬',
           engName: 'Kumquat Lemonade',
           price: 40,
+          imageUrl: 'https://im.marieclaire.com.tw/m800c533h100b0/assets/mc/202005/5EBBC9F251EEB1589365234.jpeg',
           defaults: {
             toppings: [''],
             sugar: '',
@@ -248,6 +283,7 @@ const App = {
           name: '柳澄青茶',
           engName: 'Orange Mountain Tea',
           price: 45,
+          imageUrl: 'https://i.beauty321.com/816x/https://il.beauty321.com/gallery/gallery/46868/photo-62344e7daca75.jpg',
           defaults: {
             toppings: [''],
             sugar: '',
@@ -256,7 +292,11 @@ const App = {
         },
       ],
       // 暫存所選
-      temp: {},
+      temp: {
+        name: '飲品名稱',
+        engName: 'drinks name',
+        imageUrl: 'https://fakeimg.pl/85x85/?text=drinks',
+      },
       // 訂單
       orderList: [],
       // 總金額
@@ -265,6 +305,9 @@ const App = {
       darkZone: true,
       // 顯示訂單列表
       hasOrder: false,
+      // 訂單明細
+      orderDetail: [],
+      historyOrder: [],
     }
   },
   methods: {
@@ -274,6 +317,8 @@ const App = {
       this.darkZone = false;
       // 飲品名稱
       this.temp.name = item.name;
+      this.temp.engName = item.engName;
+      this.temp.imageUrl = item.imageUrl;
       // 預設數量為1
       this.temp.number = 1;
       // 判斷是否有值，有值就填入，無值就帶入預設
@@ -291,7 +336,11 @@ const App = {
     // 取消
     cancelBtn() {
       // 清空temp
-      this.temp = {};
+      this.temp = {
+        name: '飲品名稱',
+        engName: 'drinks name',
+        imageUrl: 'https://fakeimg.pl/85x85/?text=drinks',
+      };
       // 加回黑底
       this.darkZone = true;
     },
@@ -317,25 +366,28 @@ const App = {
       // 列出訂單
       // 想問問這裡是如何解釋的，我理解的意思是將複製出來的東西push到orderList中，但還是不熟悉
 
-
+      // 修改訂單列表
       if(product.id){
         this.orderList.forEach((item, i) => {
           if(item.id == product.id) {
             this.orderList[i] = product
             this.orderList[i].toppings = product.toppings,
             this.orderList[i].salesPrice = product.price + (product.toppings.length * 10),
-            this.orderList[i].number = product.number,
-            this.orderList[i].sum = (product.price + (product.toppings.length * 10)) * product.number
+            this.orderList[i].number = product.number == '' ? 1 : product.number,
+            this.orderList[i].sum = (product.price + (product.toppings.length * 10)) * (product.number == '' ? 1 : product.number)
           }
         });
       }
+      // 加入訂單列表
       else{
-        this.orderList.push(Object.assign({}, {
+        this.orderList.unshift(Object.assign({}, {
           ...product,
+          // 若無數值，則預設為1
+          number: product.number == '' ? 1 : product.number,
           note: product.note,
           toppings: product.toppings,
           salesPrice: product.price + product.toppings.length*10,
-          sum: (product.price + product.toppings.length*10) *  product.number,
+          sum: (product.price + product.toppings.length*10) * (product.number == '' ? 1 : product.number),
           id: new Date().getTime(),
         }))
       }
@@ -368,8 +420,36 @@ const App = {
     modifyBtn(modifyItem) {
       this.darkZone = false;
       this.temp = {...modifyItem};
-      // this.temp.toppings = modifyItem.toppings;
-      
+
+    },
+    // 列出明細
+    generateOrder(orderList) {
+      this.orderDetail.list = { ...orderList },
+      this.orderDetail.date = new Date().toLocaleString(),
+      this.orderDetail.length = Object.keys(this.orderDetail.list).length
+
+      // 計算總額，不知道有沒有更好的方式
+      let count = 0
+      Object.values(this.orderDetail.list).forEach( item => {
+        count += item.sum;
+      });
+      this.orderTotal = count;
+      count = 0
+      this.orderDetail.total = this.orderTotal;
+      orderTotal = 0;
+
+      // 儲存所有資料
+      this.historyOrder.unshift(Object.assign({}, {
+          ...this.orderDetail,
+          setNumber: Object.keys(this.orderDetail.list).length,
+      }))
+
+      // 清空訂單
+      this.orderList= [];
+      // 關閉訂單列表
+      this.hasOrder = false;
+      // 清空temp、加回黑底
+      this.cancelBtn();
     }
   },
 };
