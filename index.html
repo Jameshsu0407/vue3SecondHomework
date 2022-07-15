@@ -9,7 +9,7 @@
       <div class="col-lg-3 mb-md-2" style="height: 591px; overflow-y: scroll;">
         <div class="d-flex flex-column" style="gap: 0.5rem;">
           <div class="list-group" v-for="item in products">
-            <a href="#" class="list-group-item list-group-item-action" @click="selectDrinks(item)" style="padding: 8px;">
+            <a href="#" class="list-group-item list-group-item-action" :class="{'active': temp.name === item.name }" @click="selectDrinks(item)" style="padding: 8px;">
               <div class="d-flex" style="gap: 8px;">
                 <div>
                   <img :src="item.imageUrl" style="width: 85px; height: 85px; object-fit: cover; ">
@@ -28,7 +28,7 @@
       </div>
       <div class="col-lg-9">
         <div class="card mb-2">
-          <div class="position-absolute text-white d-flex align-items-center justify-content-center" style="top: 0;bottom: 0;left: 0;right: 0;background-color: rgba(0, 0, 0, 0.65); z-index: 100;" v-if="darkZone">請先選擇飲品</div>
+          <div class="position-absolute text-white d-flex align-items-center justify-content-center" style="top: 0;bottom: 0;left: 0;right: 0;background-color: rgba(0, 0, 0, 0.65); z-index: 100;" v-if="!temp.price">請先選擇飲品</div>
           <div class="card-body px-4">
             <div class="mb-3">
               <div class="d-flex" style="gap: 20px;">
@@ -301,8 +301,6 @@ const App = {
       orderList: [],
       // 總金額
       orderTotal: 0,
-      // 黑色區塊
-      darkZone: true,
       // 顯示訂單列表
       hasOrder: false,
       // 訂單明細
@@ -313,8 +311,6 @@ const App = {
   methods: {
     // 選擇飲品
     selectDrinks(item) {
-      // 移除黑底
-      this.darkZone = false;
       // 飲品名稱
       this.temp.name = item.name;
       this.temp.engName = item.engName;
@@ -341,8 +337,6 @@ const App = {
         engName: 'drinks name',
         imageUrl: 'https://fakeimg.pl/85x85/?text=drinks',
       };
-      // 加回黑底
-      this.darkZone = true;
     },
     // 加入
     submitBtn(product) {
@@ -418,7 +412,6 @@ const App = {
     },
     // 修改
     modifyBtn(modifyItem) {
-      this.darkZone = false;
       this.temp = {...modifyItem};
 
     },
@@ -448,7 +441,7 @@ const App = {
       this.orderList= [];
       // 關閉訂單列表
       this.hasOrder = false;
-      // 清空temp、加回黑底
+      // 清空temp
       this.cancelBtn();
     }
   },
